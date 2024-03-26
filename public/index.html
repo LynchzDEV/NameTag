@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Text Processor</title>
+</head>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        text-align: center;
+        padding: 20px;
+    }
+
+    h1 {
+        color: #333;
+    }
+
+    label,
+    select,
+    button {
+        margin: 10px;
+        padding: 8px;
+        border-radius: 5px;
+    }
+
+    button {
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        padding: 10px 20px;
+    }
+
+    button:hover {
+        background-color: #45a049;
+    }
+
+    #resultDisplay {
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        background-color: #fff;
+        color: #333;
+    }
+
+    #bgPreviewContainer {
+        position: relative;
+        display: inline-block;
+        /* Makes the container fit the size of the image */
+    }
+
+    #bgPreviewContainer h1 {
+        position: absolute;
+        font-family: Itim, sans-serif;
+        top: 43%;
+        left: 50%;
+        font-size: 3rem;
+        transform: translate(-50%, -50%);
+        color: black;
+        /* Assuming you want the text in white for better visibility */
+        z-index: 10;
+        /* Ensures the text is above the image */
+    }
+
+    #bgPreview {
+        max-width: 300px;
+        display: block;
+        /* Removes bottom margin/padding of image */
+    }
+</style>
+
+<body>
+    <h1>Image Text Processor</h1>
+
+    <label for="jsonFile">Select JSON File:</label>
+    <select id="jsonFile">
+        <option value="DevOps.json">DevOps</option>
+        <option value="FrontEnd.json">FrontEnd</option>
+        <option value="GameDev.json">GameDev</option>
+        <option value="WebDesign.json">WebDesign</option>
+        <option value="Staff.json">Staff</option>
+    </select>
+
+    <label for="outputDir">Select Output Directory:</label>
+    <select id="outputDir">
+        <option value="./output/DevOps">DevOps</option>
+        <option value="./output/FrontEnd">FrontEnd</option>
+        <option value="./output/GameDev">GameDev</option>
+        <option value="./output/WebDesign">WebDesign</option>
+        <option value="./output/Staff">Staff</option>
+    </select>
+
+    <label for="bgColor">Select Background Color:</label>
+    <select id="bgColor">
+        <option value="DevOps_nameTag.png">DevOps</option>
+        <option value="Frontend_nameTag.png">FrontEnd</option>
+        <option value="GameDev_nameTag.png">GameDev</option>
+        <option value="WebDesign_nameTag.png">WebDesign</option>
+        <option value="Staff_nameTag.png">Staff</option>
+    </select>
+
+    <br />
+    <br />
+    <div id="bgPreviewContainer">
+        <h1>Fame</h1>
+        <img id="bgPreview" src="/bg/DevOps_nameTag.png" alt="Background Preview" style="max-width: 400px;">
+    </div>
+    <br />
+
+    <button id="processButton">Process Images</button>
+    <!-- <div id="resultDisplay"></div> -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const processButton = document.getElementById('processButton');
+            const jsonFileSelect = document.getElementById('jsonFile');
+            const outputDirSelect = document.getElementById('outputDir');
+            const bgColorSelect = document.getElementById('bgColor');
+            const bgPreview = document.getElementById('bgPreview');
+            const resultDisplay = document.getElementById('resultDisplay');
+
+            bgColorSelect.addEventListener('change', () => {
+                const selectedBgColor = bgColorSelect.value;
+                bgPreview.src = `/bg/${selectedBgColor}`;
+            });
+
+            processButton.addEventListener('click', async () => {
+                try {
+                    const selectedJsonFile = jsonFileSelect.value;
+                    const selectedOutputDir = outputDirSelect.value;
+                    const selectedBgColor = bgColorSelect.value;
+
+                    const response = await fetch(`http://localhost:3000/process?jsonFile=${selectedJsonFile}&outputDir=${selectedOutputDir}&bgColor=${selectedBgColor}`);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const result = await response.text();
+                    resultDisplay.textContent = result;
+                } catch (error) {
+                    resultDisplay.textContent = `Error: ${error.message}`;
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
